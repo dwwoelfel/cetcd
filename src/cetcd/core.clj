@@ -4,16 +4,24 @@
             [org.httpkit.client :as http]
             [slingshot.slingshot :refer [throw+ try+]]))
 
-(def ^{:dynamic true} *etcd-config* {:protocol "http" :host "127.0.0.1" :port 4001})
+(def default-config {:protocol "http" :host "127.0.0.1" :port 4001})
+
+(def ^{:dynamic true} *etcd-config* default-config)
 
 (defn set-connection!
   "Blindly copied the approach from congomongo, but without most of the protections"
-  [{:keys [protocol host port]
-    :or {protocol "http" host "127.0.0.1" port 4001}}]
-  (let [config {:protocol protocol :host host :port port}]
+  [{:keys [protocol host port]}]
+  (let [config (merge default-config {:protocol protocol :host host :port port})]
     (alter-var-root #'*etcd-config* (constantly config))
     (when (thread-bound? #'*etcd-config*)
       (set! *etcd-config* config))))
+
+(defmacro with-connection [config & body]
+  `(do
+     (let [config# (merge default-config ~config)]
+       (println config#)
+       (binding [*etcd-config* config#]
+         ~@body))))
 
 (defn base-url
   "Constructs url used for all api calls"
