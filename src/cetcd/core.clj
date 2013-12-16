@@ -19,7 +19,6 @@
 (defmacro with-connection [config & body]
   `(do
      (let [config# (merge default-config ~config)]
-       (println config#)
        (binding [*etcd-config* config#]
          ~@body))))
 
