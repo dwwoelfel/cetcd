@@ -82,7 +82,7 @@ You have to check manually if the condition failed:
 
 ```clojure
 user> (etcd/compare-and-swap! :a 2 {:prevValue 1})
-{:errorCode 101, :message "Test Failed", :cause "[1 != 5] [0 != 22]", :index 22}
+{:errorCode 101, :message "Test Failed", :cause "[1 != 2] [0 != 22]", :index 22}
 ```
 
 ### Waiting for a value
@@ -108,18 +108,6 @@ user> (etcd/set-key! :a 4)
 user> watchvalue
 #<Atom@69bcc736: {:action "set", :node {:key "/:a", :prevValue "3", :value "4", :modifiedIndex 20, :createdIndex 20}}>
 ```
-
-
-
-
-
-
-
-
-
-As you may have noticed from the return values of the functions, I haven't tried to hide the etcd response. The reason is that nodes are r
-
-There are three main functions that do all of the work `set-key!`, `get-key`, and `delete-key`.
 
 ## License
 
