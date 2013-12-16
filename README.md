@@ -4,6 +4,12 @@ A Clojure wrapper for [etcd]. Uses [http-kit] to talk to etcd, so we get callbac
 
 [![Build Status](https://circleci.com/gh/dwwoelfel/cetcd.png?circle-token=e7ee56b54be2ff8df039f4ea955f7e7111d91c08)](https://circleci.com/gh/dwwoelfel/cetcd)
 
+## Installation
+
+cetcd is available as a Maven artifact from [Clojars](https://clojars.org/cetcd)
+
+[cetcd "0.1.0"]
+
 ## Usage
 
 ### Set the value to a key

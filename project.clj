@@ -1,4 +1,4 @@
-(defproject cetcd "0.1.0-SNAPSHOT"
+(defproject cetcd "0.1.0"
   :description "Clojure wrapper for etcd"
   :url "http://github.com/dwwoelfel/cetcd"
   :license {:name "Eclipse Public License"
