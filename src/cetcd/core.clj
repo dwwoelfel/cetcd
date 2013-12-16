@@ -63,8 +63,11 @@
                                   {:waitIndex waitIndex}))
            :callback callback))
 
-(defn delete-key! [key & {:keys [callback]}]
-  (api-req :delete (format "keys/%s" key) :callback callback))
+(defn delete-key! [key & {:keys [recursive callback]
+                          :or {recursive false}}]
+  (api-req :delete (format "keys/%s" key)
+           :query-params {:recursive recursive}
+           :callback callback))
 
 (defn compare-and-swap! [key value conditions & {:keys [ttl callback dir] :as opts}]
   (apply-map set-key! key value :cas conditions opts))
