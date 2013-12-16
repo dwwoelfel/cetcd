@@ -72,5 +72,8 @@
 (defn watch-key [key & {:keys [waitIndex recursive callback] :as opts}]
   (apply-map get-key key :wait true opts))
 
+(defn create-dir! [key & {:keys [ttl callback] :as opts}]
+  (apply-map set-key! key nil :dir true opts))
+
 (defn connected-machines []
   (api-req :get "keys/_etcd/machines"))

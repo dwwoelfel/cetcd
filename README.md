@@ -129,6 +129,15 @@ user> watchvalue
 #<Atom@69bcc736: {:action "set", :node {:key "/:a", :prevValue "3", :value "4", :modifiedIndex 20, :createdIndex 20}}>
 ```
 
+### Create a directory
+
+```clojure
+user> (etcd/create-dir! "foo/bar/baz")
+{:action "set",
+ :node
+ {:key "/foo/bar/baz", :dir true, :modifiedIndex 37, :createdIndex 37}}
+```
+
 ## License
 
 Copyright © 2013
