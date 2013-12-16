@@ -2,7 +2,7 @@
 
 A Clojure wrapper for [etcd]. Uses [http-kit] to talk to etcd, so we get callbacks for free.
 
-[![Build Status](https://circleci.com/gh/dwwoelfel/cetcd.png?circle-token=e7ee56b54be2ff8df039f4ea955f7e7111d91c08)](https://circleci.com/dwwoelfel/cetcd)
+[![Build Status](https://circleci.com/gh/dwwoelfel/cetcd.png?circle-token=e7ee56b54be2ff8df039f4ea955f7e7111d91c08)](https://circleci.com/gh/dwwoelfel/cetcd)
 
 ## Usage
 
