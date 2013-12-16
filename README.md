@@ -60,6 +60,26 @@ user> (-> (etcd/get-key :b) :node :value) ;; return nil if key doesn't exist
 nil
 ```
 
+cetcd purposely doesn't return the value because directories require you to know about nodes
+```clojure
+user> (do
+        (etcd/set-key! :foo/bar 1)
+        (etcd/set-key! :foo/baz 2)
+        (etcd/get-key :foo))
+{:action "get",
+ :node
+ {:key "/:foo",
+  :dir true,
+  :nodes
+  [{:key "/:foo/bar", :value "1", :modifiedIndex 26, :createdIndex 26}
+   {:key "/:foo/baz",
+    :value "2",
+    :modifiedIndex 27,
+    :createdIndex 27}],
+  :modifiedIndex 24,
+  :createdIndex 24}}
+```
+
 ### Delete a key
 
 ```clojure
