@@ -1,6 +1,6 @@
 # cetcd
 
-A Clojure wrapper for etcd
+A Clojure wrapper for [etcd]. Uses [clj-http] to talk to etcd, so we get callbacks for free.
 
 ## Usage
 
@@ -115,3 +115,6 @@ Copyright © 2013
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
+
+[etcd]: https://github.com/coreos/etcd
+[http-kit]: http://http-kit.org/
