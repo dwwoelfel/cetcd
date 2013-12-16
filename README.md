@@ -27,7 +27,7 @@ user> (etcd/get-key :a)
  :node {:key "/:a", :modifiedIndex 10, :createdIndex 10, :value "1"}}
 ```
 
-Let's get the value:
+Let's get the actual value:
 
 ```clojure
 user> (-> (etcd/get-key :a) :node :value)
@@ -52,6 +52,10 @@ cetcd also doesn't do much to help you if the key doesn't exist:
 ```clojure
 user> (etcd/get-key :b)
 {:errorCode 100, :message "Key Not Found", :cause "/:b", :index 22}
+```
+
+But sane callers should be fine:
+```clojure
 user> (-> (etcd/get-key :b) :node :value) ;; return nil if key doesn't exist
 nil
 ```
@@ -79,7 +83,7 @@ You have to check manually if the condition failed:
 ```clojure
 user> (etcd/compare-and-swap! :a 2 {:prevValue 1})
 {:errorCode 101, :message "Test Failed", :cause "[1 != 5] [0 != 22]", :index 22}
-```clojure
+```
 
 ### Waiting for a value
 
