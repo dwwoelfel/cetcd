@@ -30,11 +30,17 @@
                       (:port *etcd-config*)
                       "/v2")))
 
+(defn parse-response [resp]
+  (if-let [error (-> resp :error)]
+    (throw+ error)
+    (-> resp
+        :body
+        (cheshire.core/decode true))))
+
 (defn wrap-callback [callback]
   (fn [resp]
     (-> resp
-        :body
-        (cheshire.core/decode true)
+        parse-response
         callback)))
 
 (defn api-req [method path & {:keys [callback] :as opts}]
@@ -46,8 +52,7 @@
     (if callback
       resp
       (-> @resp
-          :body
-          (cheshire.core/decode true)))))
+          parse-response))))
 
 (defn set-key!
   "Sets key to value, optionally takes ttl in seconds as keyword argument"

@@ -77,3 +77,8 @@
                                                               (reset! result-atom result)))]
       (etcd/set-key! "new-key" "new value")
       (is (= "new value" (-> @result-atom :node :value))))))
+
+(deftest exceptional-errors-throw-exceptions
+  (is (thrown? java.net.ConnectException
+        (etcd/with-connection {:port 4002}
+          (etcd/get-key "key")))))
