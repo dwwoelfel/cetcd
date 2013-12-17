@@ -1,12 +1,12 @@
 # cetcd
 
-A Clojure wrapper for [etcd]. Uses [http-kit] to talk to etcd, so we get callbacks for free.
+A Clojure wrapper for [etcd]. Uses [http-kit] to talk to `etcd`, so we get callbacks for free.
 
 [![Build Status](https://circleci.com/gh/dwwoelfel/cetcd.png?circle-token=e7ee56b54be2ff8df039f4ea955f7e7111d91c08)](https://circleci.com/gh/dwwoelfel/cetcd)
 
 ## Installation
 
-cetcd is available as a Maven artifact from [Clojars](https://clojars.org/cetcd)
+`cetcd` is available as a Maven artifact from [Clojars](https://clojars.org/cetcd).
 
 [cetcd "0.1.2"]
 
@@ -42,7 +42,7 @@ user> (-> (etcd/get-key :a) :node :value)
 "1"
 ```
 
-Notice that cetcd didn't preserve the type of the key's value. That's a job I left to the caller:
+Notice that `cetcd` didn't preserve the type of the key's value. That's a job that's left to the caller:
 
 ```clojure
 user> (etcd/set-key! :clojure-key (pr-str 1))
@@ -55,7 +55,7 @@ user> (-> (etcd/get-key :clojure-key)
 
 ```
 
-cetcd also doesn't do much to help you if the key doesn't exist:
+`cetcd` also doesn't do much to help you if the key doesn't exist:
 
 ```clojure
 user> (etcd/get-key :b)
@@ -68,7 +68,7 @@ user> (-> (etcd/get-key :b) :node :value) ;; return nil if key doesn't exist
 nil
 ```
 
-cetcd purposely doesn't return the value because directories require you to know about nodes
+`cetcd` purposely doesn't return the value because directories require you to know about nodes
 ```clojure
 user> (do
         (etcd/set-key! :foo/bar 1)
@@ -91,15 +91,17 @@ user> (do
 ### Delete a key
 
 ```clojure
-user> (etcd/delete-key :a)
+user> (etcd/delete-key! :a)
 {:action "delete",
  :node
  {:key "/:a", :modifiedIndex 11, :createdIndex 10, :prevValue "1"}}
 ```
 
-### Compare and swap
 
-Everything that etcd does can be accomplished with the three functions above, by passing in the proper keyword args. There are also a couple of helper functions to keep things a bit cleaner.
+Everything that `etcd` does can be accomplished with the `set-key!`, `get-key`, and `delete-key!` functions above, by passing in the proper keyword args. There are also a few helper functions to keep things a bit cleaner.
+
+
+### Compare and swap
 
 ```clojure
 user> (etcd/compare-and-swap! :a 2 {:prevValue 1})
@@ -113,7 +115,7 @@ user> (etcd/compare-and-swap! :a 2 {:prevValue 1})
 {:errorCode 101, :message "Test Failed", :cause "[1 != 2] [0 != 22]", :index 22}
 ```
 
-### Waiting for a value
+### Wait for a value
 
 ```clojure
 user> (future (println "new value is:" (-> (etcd/watch-key :a) :node :value)))
