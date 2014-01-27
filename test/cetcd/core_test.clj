@@ -82,3 +82,12 @@
   (is (thrown? java.net.ConnectException
         (etcd/with-connection {:port 4002}
           (etcd/get-key "key")))))
+
+(deftest keys-are-url-encoded
+  (is (= "my value"
+         (-> (etcd/set-key! "my key" "my value")
+             :node
+             :value)))
+  (is (= "my value" (-> (etcd/get-key "my key") :node :value)))
+  (etcd/delete-key! "my key")
+  (is (nil? (-> (etcd/get-key "my key") :node :value))))

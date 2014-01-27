@@ -1,6 +1,7 @@
 (ns cetcd.core
   (:require [cheshire.core :as json]
             [cetcd.util :refer (apply-map)]
+            [cemerick.url :refer (url-encode)]
             [org.httpkit.client :as http]
             [slingshot.slingshot :refer [throw+ try+]]))
 
@@ -58,7 +59,7 @@
   "Sets key to value, optionally takes ttl in seconds as keyword argument"
   [key value & {:keys [ttl callback dir cas] :as opts
                 :or {dir false}}]
-  (api-req :put (format "keys/%s" key)
+  (api-req :put (->> key url-encode (format "keys/%s"))
            :form-params (merge {:value value}
                                cas
                                (when ttl
@@ -68,7 +69,7 @@
 
 (defn get-key [key & {:keys [recursive wait waitIndex callback]
                       :or {recursive false wait false}}]
-  (api-req :get (format "keys/%s" key)
+  (api-req :get (->> key url-encode (format "keys/%s"))
            :query-params (merge {:recursive recursive
                                  :wait wait}
                                 (when waitIndex
@@ -77,7 +78,7 @@
 
 (defn delete-key! [key & {:keys [recursive callback]
                           :or {recursive false}}]
-  (api-req :delete (format "keys/%s" key)
+  (api-req :delete (->> key url-encode (format "keys/%s"))
            :query-params {:recursive recursive}
            :callback callback))
 
