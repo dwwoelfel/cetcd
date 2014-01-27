@@ -76,6 +76,7 @@
           watch-promise (etcd/watch-key "new-key" :callback (fn [result]
                                                               (reset! result-atom result)))]
       (etcd/set-key! "new-key" "new value")
+      @watch-promise
       (is (= "new value" (-> @result-atom :node :value))))))
 
 (deftest exceptional-errors-throw-exceptions
