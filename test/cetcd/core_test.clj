@@ -62,8 +62,12 @@
           :errorCode)))
 
 (deftest watch-key-works
+  (etcd/delete-key! "new-key")
   (let [wait-future (future (etcd/watch-key "new-key"))]
-    (is (not (future-done? wait-future)))
+    (is (nil? (-> (etcd/get-key "new-key")
+                  :node
+                  :value)))
+
     (etcd/set-key! "new-key" "value")
     (is (= "value"
            (-> wait-future
