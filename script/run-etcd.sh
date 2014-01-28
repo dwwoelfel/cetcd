@@ -3,7 +3,7 @@
 set -x
 set -e
 
-wget https://github.com/coreos/etcd/releases/download/v0.2.0-rc2/etcd-v0.2.0-rc2-Linux-x86_64.tar.gz
+wget https://github.com/coreos/etcd/releases/download/v0.2.0/etcd-v0.2.0-Linux-x86_64.tar.gz
 
 tar xvfz etcd-*.tar.gz
 cd etcd-*
