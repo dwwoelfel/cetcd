@@ -1,4 +1,4 @@
-(defproject cetcd "0.1.2"
+(defproject cetcd "0.2.0"
   :description "Clojure wrapper for etcd"
   :url "http://github.com/dwwoelfel/cetcd"
   :license {:name "Eclipse Public License"
@@ -7,4 +7,5 @@
                  [http-kit "2.1.13"]
                  [clj-http "0.7.8"]
                  [cheshire "5.2.0"]
-                 [slingshot "0.10.3"]])
+                 [slingshot "0.10.3"]
+                 [com.cemerick/url "0.1.0"]])

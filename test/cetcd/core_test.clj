@@ -62,8 +62,12 @@
           :errorCode)))
 
 (deftest watch-key-works
+  (etcd/delete-key! "new-key")
   (let [wait-future (future (etcd/watch-key "new-key"))]
-    (is (not (future-done? wait-future)))
+    (is (nil? (-> (etcd/get-key "new-key")
+                  :node
+                  :value)))
+
     (etcd/set-key! "new-key" "value")
     (is (= "value"
            (-> wait-future
@@ -76,9 +80,19 @@
           watch-promise (etcd/watch-key "new-key" :callback (fn [result]
                                                               (reset! result-atom result)))]
       (etcd/set-key! "new-key" "new value")
+      @watch-promise
       (is (= "new value" (-> @result-atom :node :value))))))
 
 (deftest exceptional-errors-throw-exceptions
   (is (thrown? java.net.ConnectException
         (etcd/with-connection {:port 4002}
           (etcd/get-key "key")))))
+
+(deftest keys-are-url-encoded
+  (is (= "my value"
+         (-> (etcd/set-key! "my key" "my value")
+             :node
+             :value)))
+  (is (= "my value" (-> (etcd/get-key "my key") :node :value)))
+  (etcd/delete-key! "my key")
+  (is (nil? (-> (etcd/get-key "my key") :node :value))))
