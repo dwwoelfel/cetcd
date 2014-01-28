@@ -12,7 +12,7 @@ A Clojure wrapper for [etcd]. Uses [http-kit] to talk to `etcd`, so we get callb
 
 ## Changelog
 
-# Version 0.2.0
+### Version 0.2.0
 
 - URL encode all keys
 
