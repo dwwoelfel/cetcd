@@ -8,7 +8,13 @@ A Clojure wrapper for [etcd]. Uses [http-kit] to talk to `etcd`, so we get callb
 
 `cetcd` is available as a Maven artifact from [Clojars](https://clojars.org/cetcd).
 
-[cetcd "0.1.2"]
+[cetcd "0.2.0"]
+
+## Changelog
+
+# Version 0.2.0
+
+- URL encode all keys
 
 ## Usage
 
