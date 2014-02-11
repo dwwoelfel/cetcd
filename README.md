@@ -8,9 +8,13 @@ A Clojure wrapper for [etcd]. Uses [http-kit] to talk to `etcd`, so we get callb
 
 `cetcd` is available as a Maven artifact from [Clojars](https://clojars.org/cetcd).
 
-[cetcd "0.2.0"]
+[cetcd "0.2.1"]
 
 ## Changelog
+
+### Version 0.2.1
+
+- Update http-kit to make 307 redirects work (fixes #5). Thanks pjlegato!
 
 ### Version 0.2.0
 
