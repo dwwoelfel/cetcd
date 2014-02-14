@@ -61,6 +61,21 @@
   (is (-> (etcd/compare-and-swap! :unique-key "new value" {:prevExist false})
           :errorCode)))
 
+(deftest compare-and-delete!-works
+  (let [index (-> (etcd/set-key! :cad-key "cad value") :node :modifiedIndex)]
+    (is (-> (etcd/compare-and-delete! :cad-key {:prevValue "value"})
+            :errorCode
+            (= 101)))
+    (is (-> (etcd/compare-and-delete! :cad-key {:prevIndex (inc index)})
+            :errorCode
+            (= 101)))
+
+    (is (= "cad value" (-> :cad-key etcd/get-key :node :value)))
+    (is (-> (etcd/compare-and-delete! :cad-key {:prevValue "cad value"})
+            :errorCode
+            nil?))
+    (is (-> :cad-key etcd/get-key :errorCode (= 100)))))
+
 (deftest watch-key-works
   (etcd/delete-key! "new-key")
   (let [wait-future (future (etcd/watch-key "new-key"))]
