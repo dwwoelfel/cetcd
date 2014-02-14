@@ -8,9 +8,13 @@ A Clojure wrapper for [etcd]. Uses [http-kit] to talk to `etcd`, so we get callb
 
 `cetcd` is available as a Maven artifact from [Clojars](https://clojars.org/cetcd).
 
-[cetcd "0.2.1"]
+[cetcd "0.2.2"]
 
 ## Changelog
+
+### Version 0.2.2
+
+- Adds support for prevValue and prevIndex to delete, implements compare-and-delete! (fixes #4). Thanks pjlegato!
 
 ### Version 0.2.1
 
