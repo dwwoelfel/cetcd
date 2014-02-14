@@ -125,6 +125,24 @@ user> (etcd/compare-and-swap! :a 2 {:prevValue 1})
 {:errorCode 101, :message "Test Failed", :cause "[1 != 2] [0 != 22]", :index 22}
 ```
 
+### Compare and delete
+
+```clojure
+user> (etcd/set-key! :cad-key 2)
+{:action "set", :node {:key "/:cad-key", :value "2", :modifiedIndex 47, :createdIndex 47}}
+user> (etcd/compare-and-delete! :cad-key {:prevValue 2})
+{:action "compareAndDelete", :node {:key "/:cad-key", :modifiedIndex 48, :createdIndex 47}, :prevNode {:key "/:cad-key", :value "2", :modifiedIndex 47, :createdIndex 47}}
+```
+
+You have to check manually if the condition failed:
+
+```clojure
+user> (etcd/set-key! :cad-key 2)
+{:action "set", :node {:key "/:cad-key", :value "2", :modifiedIndex 49, :createdIndex 49}}
+user> (etcd/compare-and-delete! :cad-key {:prevValue 1})
+{:errorCode 101, :message "Compare failed", :cause "[1 != 2] [0 != 49]", :index 49}
+```
+
 ### Wait for a value
 
 ```clojure
