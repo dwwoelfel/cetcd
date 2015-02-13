@@ -3,6 +3,7 @@
             [cetcd.util :refer (apply-map)]
             [cemerick.url :refer (url-encode)]
             [org.httpkit.client :as http]
+            [clojure.string :as str]
             [slingshot.slingshot :refer [throw+ try+]]))
 
 (def default-config {:protocol "http" :host "127.0.0.1" :port 4001})
@@ -12,7 +13,10 @@
 (defn set-connection!
   "Blindly copied the approach from congomongo, but without most of the protections"
   [{:keys [protocol host port]}]
-  (let [config (merge default-config {:protocol protocol :host host :port port})]
+  (let [config (->> {:protocol protocol :host host :port port}
+                    (filter second)
+                    (into {})
+                    (merge default-config))]
     (alter-var-root #'*etcd-config* (constantly config))
     (when (thread-bound? #'*etcd-config*)
       (set! *etcd-config* config))))
@@ -23,13 +27,13 @@
        (binding [*etcd-config* config#]
          ~@body))))
 
-(defn base-url
+(defn make-url
   "Constructs url used for all api calls"
-  []
+  [& parts]
   (str (java.net.URL. (:protocol *etcd-config*)
                       (:host *etcd-config*)
                       (:port *etcd-config*)
-                      "/v2")))
+                      (str/join "/" (concat ["/v2"] parts)))))  
 
 (defn parse-response [resp]
   (if-let [error (-> resp :error)]
@@ -44,9 +48,16 @@
         parse-response
         callback)))
 
+(defn condition-args
+  [args & conditions]
+  (let [conditions (or conditions [:prevExist :prevValue :prevIndex])]
+    (into {} (for [k conditions
+                   :when (contains? args k)]
+               [k (get args k)]))))
+
 (defn api-req [method path & {:keys [callback] :as opts}]
   (let [resp (http/request (merge {:method method
-                                   :url (format "%s/%s" (base-url) path)}
+                                   :url (make-url path)}
                                   opts)
                            (when callback
                              (wrap-callback callback)))]
@@ -57,30 +68,39 @@
 
 (defn set-key!
   "Sets key to value, optionally takes ttl in seconds as keyword argument"
-  [key value & {:keys [ttl callback dir cas] :as opts
+  [key value & {:keys [ttl callback dir cas order] :as opts
                 :or {dir false}}]
-  (api-req :put (->> key url-encode (format "keys/%s"))
-           :form-params (merge {:value value}
+  (api-req (if order :post :put)
+           (->> key url-encode (format "keys/%s"))
+           :form-params (merge (if dir
+                                 {:dir dir}
+                                 {:value value})
                                cas
-                               (when ttl
+                               (condition-args opts)
+                               (when (contains? opts :ttl)
                                  {:ttl ttl
                                   :dir dir}))
            :callback callback))
 
-(defn get-key [key & {:keys [recursive wait waitIndex callback]
+(defn get-key [key & {:keys [recursive wait waitIndex callback sorted]
                       :or {recursive false wait false}}]
   (api-req :get (->> key url-encode (format "keys/%s"))
            :query-params (merge {:recursive recursive
                                  :wait wait}
-                                (when waitIndex
-                                  {:waitIndex waitIndex}))
+                                (filter second
+                                        {:waitIndex waitIndex
+                                         :sorted sorted}))
            :callback callback))
 
-(defn delete-key! [key & {:keys [recursive callback cas]
-                          :or {recursive false}}]
+(defn delete-key! [key & {:keys [recursive callback cas dir]
+                          :or {recursive false}
+                          :as opts}]
   (api-req :delete (->> key url-encode (format "keys/%s"))
            :query-params (merge {:recursive recursive}
-                                cas)
+                                (filter second
+                                        {:dir dir})
+                                cas
+                                (condition-args opts :prevValue :prevIndex))
            :callback callback))
 
 (defn compare-and-swap! [key value conditions & {:keys [ttl callback dir] :as opts}]
@@ -97,3 +117,12 @@
 
 (defn connected-machines []
   (api-req :get "keys/_etcd/machines"))
+
+(defn stats-leader []
+  (api-req :get "stats/leader"))
+
+(defn stats-self []
+  (api-req :get "stats/self"))
+
+(defn stats-store []
+  (api-req :get "stats/store"))
