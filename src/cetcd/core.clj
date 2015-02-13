@@ -10,6 +10,8 @@
 
 (def ^{:dynamic true} *etcd-config* default-config)
 
+(def ^:dynamic *timeout* 1000)
+
 (defn set-connection!
   "Blindly copied the approach from congomongo, but without most of the protections"
   [{:keys [protocol host port]}]
@@ -33,7 +35,7 @@
   (str (java.net.URL. (:protocol *etcd-config*)
                       (:host *etcd-config*)
                       (:port *etcd-config*)
-                      (str/join "/" (concat ["/v2"] parts)))))  
+                      (str/join "/" (concat [""] parts)))))
 
 (defn parse-response [resp]
   (if-let [error (-> resp :error)]
@@ -57,7 +59,8 @@
 
 (defn api-req [method path & {:keys [callback] :as opts}]
   (let [resp (http/request (merge {:method method
-                                   :url (make-url path)}
+                                   :timeout *timeout*
+                                   :url (make-url "v2" path)}
                                   opts)
                            (when callback
                              (wrap-callback callback)))]
@@ -126,3 +129,13 @@
 
 (defn stats-store []
   (api-req :get "stats/store"))
+
+(defn version []
+  (let [resp @(http/request {:method :get
+                             :timeout *timeout*
+                             :url (make-url "version")})
+        body (-> resp :body)]
+    (if (re-matches #"etcd.*" body) ;; 0.x version
+      {:releaseVersion (last (re-matches #"etcd\s(.*)" ver))
+       :internalVersion "0"} ;; be consistent
+      (parse-response resp)))) ;; 2.x version
